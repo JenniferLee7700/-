@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>어린이 출입 관리 시스템</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --success: #4caf50;
+            --success-light: #81c784;
+            --warning: #ff9800;
+            --warning-light: #ffb74d;
+            --danger: #f44336;
+            --danger-light: #e57373;
+            --neutral: #424242;
+            --neutral-light: #757575;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s ease;
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --content-width: 500px;
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            padding: var(--space-md);
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: var(--content-width);
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: var(--space-md);
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-icon {
+            width: 54px;
+            height: 54px;
+            margin-right: var(--space-md);
+            flex-shrink: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+        }
+
+        .header-icon img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .header-content {
+            flex-grow: 1;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            color: var(--neutral-light);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15) 0%, rgba(58, 134, 255, 0.05) 100%);
+            border-radius: 50%;
+            transform: translate(40%, -40%);
+            z-index: 0;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .tab {
+            padding: var(--space-md) var(--space-sm);
+            text-align: center;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .tab .status-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .tab:nth-child(1) .status-circle {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .tab:nth-child(2) .status-circle {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .tab:nth-child(3) .status-circle {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .tab:nth-child(4) .status-circle {
+            background-color: #e0e0e0;
+            color: var(--neutral);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .tab.active .status-circle {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .tab:not(.active):hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+
+        .input-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 500;
+            color: var(--primary-dark);
+            margin-bottom: var(--space-sm);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-label .icon {
+            margin-right: var(--space-sm);
+            color: var(--primary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: var(--space-lg);
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: var(--space-lg);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .check-btn.arrival {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .check-btn.arrival:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+
+        .check-btn.departure {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .check-btn.departure:hover {
+            background: #e53935;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+        }
+
+        .check-btn.late {
+            background: var(--warning);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+
+        .check-btn.late:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+        }
+
+        .check-btn.absent {
+            background: var(--neutral);
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 66, 66, 0.3);
+        }
+
+        .check-btn.absent:hover {
+            background: #303030;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(66, 66, 66, 0.4);
+        }
+
+        .records-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-lg);
+        }
+
+        .records-title {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .records-title .icon {
+            color: var(--primary);
+        }
+
+        .clear-all-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .clear-all-btn:hover {
+            background: #e53935;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+
+        .no-records {
+            text-align: center;
+            padding: var(--space-xl) var(--space-lg);
+            color: var(--neutral-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .no-records .empty-icon {
+            font-size: 3rem;
+            color: #e0e0e0;
+        }
+
+        .record-item {
+            border: 1px solid #f0f0f0;
+            border-radius: var(--border-radius-sm);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            transition: var(--transition);
+            background: white;
+        }
+
+        .record-item:hover {
+            border-color: #e0e0e0;
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+
+        .record-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            gap: 4px;
+        }
+
+        .status-arrival {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .status-departure {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+        }
+
+        .status-late {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .status-absent {
+            background-color: rgba(66, 66, 66, 0.1);
+            color: var(--neutral);
+        }
+
+        .delete-btn {
+            background: rgba(244, 67, 54, 0.1);
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+        }
+
+        .delete-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+            color: #d32f2f;
+        }
+
+        .record-times {
+            margin-bottom: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .time-entry {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--neutral-light);
+            gap: var(--space-xs);
+        }
+
+        .time-entry .time {
+            font-family: 'Noto Sans KR', monospace;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .time-entry .status-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .time-entry:nth-child(1) .status-icon {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .time-entry:nth-child(2) .status-icon {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .time-entry:nth-child(3) .status-icon {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .time-entry:nth-child(4) .status-icon {
+            background-color: #e0e0e0;
+            color: var(--neutral);
+        }
+
+        .kakao-btn {
+            width: 100%;
+            background: #fee500;
+            border: none;
+            color: #333;
+            padding: var(--space-md);
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .kakao-btn:hover {
+            background: #fdd835;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .kakao-btn .icon {
+            font-size: 1.2rem;
+        }
+
+
+
+
+
+        .guide {
+            background: linear-gradient(145deg, rgba(67, 97, 238, 0.1) 0%, rgba(72, 149, 239, 0.05) 100%);
+            border-radius: var(--border-radius);
+            padding: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .guide h3 {
+            color: var(--primary-dark);
+            font-size: 1rem;
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .guide h3 .icon {
+            color: var(--primary);
+        }
+
+        .guide ul {
+            list-style: none;
+            color: var(--primary-dark);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .guide li {
+            position: relative;
+            padding-left: var(--space-md);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .guide li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        @media (max-width: 500px) {
+            :root {
+                --content-width: 100%;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .header {
+                border-radius: var(--border-radius-sm);
+                padding: var(--space-md);
+            }
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .header-icon img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .header-title {
+                font-size: 1.25rem;
+            }
+
+            .card {
+                padding: var(--space-md);
+                border-radius: var(--border-radius-sm);
+            }
+
+            .tabs {
+                padding: var(--space-sm);
+            }
+
+            .tab {
+                padding: var(--space-sm);
+                font-size: 0.8rem;
+            }
+
+            .tab .status-circle {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+            }
+
+            .input-field,
+            .check-btn {
+                padding: var(--space-md);
+            }
+
+            .guide {
+                margin-bottom: var(--space-lg);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .record-item {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .check-btn {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+
+        .check-btn:active {
+            transform: scale(0.98);
+        }
+
+        .footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            color: var(--neutral-light);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: var(--space-xl);
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-icon">
+                <img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/dbe38309565440a4890faa3730a3d9cb.png" alt="학원 아이콘">
+            </div>
+            <div class="header-content">
+                <h1 class="header-title">제니학원 출결관리</h1>
+                <p class="header-subtitle">안전한 등하원을 알려드려요</p>
+            </div>
+        </div>
+
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+            <button class="tab active" data-tab="arrival">
+                <span class="status-circle">✓</span>
+                등원
+            </button>
+            <button class="tab" data-tab="departure">
+                <span class="status-circle">✓</span>
+                하원
+            </button>
+            <button class="tab" data-tab="late">
+                <span class="status-circle">!</span>
+                미등원
+            </button>
+            <button class="tab" data-tab="absent">
+                <span class="status-circle">-</span>
+                결석
+            </button>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div class="card">
+            <div class="input-group">
+                <label class="input-label">
+                    <span class="icon">👤</span>
+                    학생명
+                </label>
+                <input type="text" id="nameInput" class="input-field" placeholder="이름을 입력하세요">
+            </div>
+            <button id="checkBtn" class="check-btn arrival">
+                <img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/b3416e893eb8458d953e9d2a346c1ee8.png" alt="체크" width="24" height="24">
+                등원 체크하기
+            </button>
+        </div>
+
+        <!-- 출입 기록 -->
+        <div class="card">
+            <div class="records-header">
+                <h2 class="records-title">
+                    <span class="icon">🕐</span>
+                    오늘의 출결 기록
+                </h2>
+                <button id="clearAllBtn" class="clear-all-btn">
+                    <span class="icon">🗑️</span>
+                    전체삭제
+                </button>
+            </div>
+            <div id="recordsList">
+                <div class="no-records">
+                    <div class="empty-icon">📋</div>
+                    <p>아직 출결 기록이 없습니다</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 사용 안내 -->
+        <div class="guide">
+            <h3>
+                <span class="icon">💡</span>
+                사용법
+            </h3>
+            <ul>
+                <li>등원/하원 탭을 선택하세요</li>
+                <li>학생명을 입력하고 체크하세요</li>
+                <li>카카오톡 공유로 부모님께 알림을 보내세요</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            @2025 Created by IU
+        </div>
+    </div>
+
+    <script>
+        class AttendanceTracker {
+            constructor() {
+                this.children = [];
+                this.currentTab = 'arrival';
+                this.init();
+                this.loadData();
+            }
+
+            init() {
+                // 탭 이벤트
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchTab(e.currentTarget.dataset.tab);
+                    });
+                });
+
+                // 체크 버튼 이벤트
+                document.getElementById('checkBtn').addEventListener('click', () => {
+                    this.handleAttendance();
+                });
+
+                // 전체삭제 버튼 이벤트
+                document.getElementById('clearAllBtn').addEventListener('click', () => {
+                    this.clearAllRecords();
+                });
+
+                // 엔터키 이벤트
+                document.getElementById('nameInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleAttendance();
+                    }
+                });
+
+                // 초기 렌더링
+                this.renderRecords();
+            }
+
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // 탭 스타일 업데이트
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+                // 버튼 스타일 업데이트
+                const checkBtn = document.getElementById('checkBtn');
+                if (tab === 'arrival') {
+                    checkBtn.className = 'check-btn arrival';
+                    checkBtn.innerHTML = '<img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/b3416e893eb8458d953e9d2a346c1ee8.png" alt="체크" width="24" height="24"> 등원 체크하기';
+                } else if (tab === 'departure') {
+                    checkBtn.className = 'check-btn departure';
+                    checkBtn.innerHTML = '<img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/b3416e893eb8458d953e9d2a346c1ee8.png" alt="체크" width="24" height="24"> 하원 체크하기';
+                } else if (tab === 'late') {
+                    checkBtn.className = 'check-btn late';
+                    checkBtn.innerHTML = '<img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/b3416e893eb8458d953e9d2a346c1ee8.png" alt="체크" width="24" height="24"> 미등원 체크하기';
+                } else if (tab === 'absent') {
+                    checkBtn.className = 'check-btn absent';
+                    checkBtn.innerHTML = '<img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/b3416e893eb8458d953e9d2a346c1ee8.png" alt="체크" width="24" height="24"> 결석 체크하기';
+                }
+
+                // 입력 필드에 포커스
+                document.getElementById('nameInput').focus();
+            }
+
+            getCurrentTime() {
+                return new Date().toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+
+            getTimeOnly() {
+                return new Date().toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+
+            handleAttendance() {
+                const nameInput = document.getElementById('nameInput');
+                const name = nameInput.value.trim();
+
+                if (!name) {
+                    alert('이름을 입력해주세요!');
+                    nameInput.focus();
+                    return;
+                }
+
+                const currentTime = this.getCurrentTime();
+                const existingChildIndex = this.children.findIndex(child => child.name === name);
+
+                if (existingChildIndex >= 0) {
+                    // 기존 아이 업데이트
+                    if (this.currentTab === 'arrival') {
+                        this.children[existingChildIndex].arrivalTime = currentTime;
+                        this.children[existingChildIndex].status = '등원';
+                    } else if (this.currentTab === 'departure') {
+                        this.children[existingChildIndex].departureTime = currentTime;
+                        this.children[existingChildIndex].status = '하원';
+                    } else if (this.currentTab === 'late') {
+                        this.children[existingChildIndex].lateTime = currentTime;
+                        this.children[existingChildIndex].status = '미등원';
+                    } else if (this.currentTab === 'absent') {
+                        this.children[existingChildIndex].absentTime = currentTime;
+                        this.children[existingChildIndex].status = '결석';
+                    }
+                } else {
+                    // 새 아이 추가
+                    const newChild = {
+                        name: name,
+                        arrivalTime: this.currentTab === 'arrival' ? currentTime : '',
+                        departureTime: this.currentTab === 'departure' ? currentTime : '',
+                        lateTime: this.currentTab === 'late' ? currentTime : '',
+                        absentTime: this.currentTab === 'absent' ? currentTime : '',
+                        status: this.currentTab === 'arrival' ? '등원' : 
+                               this.currentTab === 'departure' ? '하원' :
+                               this.currentTab === 'late' ? '미등원' : '결석'
+                    };
+                    this.children.push(newChild);
+                }
+
+                this.saveData();
+                this.renderRecords();
+                nameInput.value = '';
+                nameInput.focus();
+
+                // 체크 버튼 애니메이션
+                const checkBtn = document.getElementById('checkBtn');
+                checkBtn.classList.add('pulse');
+                setTimeout(() => {
+                    checkBtn.classList.remove('pulse');
+                }, 300);
+            }
+
+            shareToKakao(child) {
+                const today = new Date();
+                const dateString = today.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+                
+                let message;
+                
+                if (child.status === '등원') {
+                    let timeOnly = '시간 정보 없음';
+                    if (child.arrivalTime) {
+                        // "오전" 또는 "오후"부터 끝까지 추출
+                        const timeMatch = child.arrivalTime.match(/(오전|오후)\s+\d{1,2}:\d{2}:\d{2}/);
+                        if (timeMatch) {
+                            timeOnly = timeMatch[0];
+                        }
+                    }
+                    message = `🌅 등원 알림\n\n` +
+                        `👶 ${child.name}\n` +
+                        `📅 ${dateString}\n` +
+                        `🕐 등원시간: ${timeOnly}\n\n` +
+                        `안전하게 도착했어요! 😊\n\n` +
+                        `#제니학원 #출결관리 #1:1맞춤학습 #개인커리큘럼`;
+                } else if (child.status === '하원') {
+                    let timeOnly = '시간 정보 없음';
+                    if (child.departureTime) {
+                        // "오전" 또는 "오후"부터 끝까지 추출
+                        const timeMatch = child.departureTime.match(/(오전|오후)\s+\d{1,2}:\d{2}:\d{2}/);
+                        if (timeMatch) {
+                            timeOnly = timeMatch[0];
+                        }
+                    }
+                    message = `🌆 하원 알림\n\n` +
+                        `👶 ${child.name}\n` +
+                        `📅 ${dateString}\n` +
+                        `🕐 하원시간: ${timeOnly}\n\n` +
+                        `안전하게 하원했어요! 🏠\n\n` +
+                        `#제니학원 #출결관리 #1:1맞춤학습 #개인커리큘럼`;
+                } else if (child.status === '미등원') {
+                    let timeOnly = '시간 정보 없음';
+                    if (child.lateTime) {
+                        // "오전" 또는 "오후"부터 끝까지 추출
+                        const timeMatch = child.lateTime.match(/(오전|오후)\s+\d{1,2}:\d{2}:\d{2}/);
+                        if (timeMatch) {
+                            timeOnly = timeMatch[0];
+                        }
+                    }
+                    message = `⏰ 미등원 알림\n\n` +
+                        `👶 ${child.name}\n` +
+                        `📅 ${dateString}\n` +
+                        `🕐 확인시간: ${timeOnly}\n\n` +
+                        `아직 등원전입니다. 현재 상황 확인 부탁드립니다~\n\n` +
+                        `#제니학원 #출결관리 #등원전상황확인요망 #1:1맞춤학습 #개인커리큘럼`;
+                } else if (child.status === '결석') {
+                    message = `📝 결석 알림\n\n` +
+                        `👶 ${child.name}\n` +
+                        `📅 ${dateString}\n\n` +
+                        `오늘 결석으로 확인되었습니다. 📋\n` +
+                        `일정 협의해서 보강 진행하겠습니다.\n\n` +
+                        `#제니학원 #출결관리 #결석보강 #1:1맞춤학습 #개인커리큘럼`;
+                } else {
+                    message = `📋 출결 알림\n\n` +
+                        `👶 ${child.name}\n` +
+                        `📅 ${dateString}\n` +
+                        `상태: ${child.status}\n\n` +
+                        `#제니학원 #출결관리 #1:1맞춤학습 #개인커리큘럼`;
+                }
+
+                // 클립보드에 복사
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(message).then(() => {
+                        alert('📱 메시지가 복사되었습니다!\n카카오톡에서 붙여넣기 하세요.');
+                    }).catch(() => {
+                        this.fallbackCopy(message);
+                    });
+                } else {
+
+
+                    this.fallbackCopy(message);
+                }
+            }
+
+
+
+            fallbackCopy(message) {
+                // 구형 브라우저용 클립보드 복사
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = message;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        alert('📱 메시지가 복사되었습니다!\n카카오톡에서 붙여넣기 하세요.');
+                    } else {
+                        this.showMessageDialog(message);
+                    }
+                } catch (err) {
+                    this.showMessageDialog(message);
+                }
+            }
+
+            showMessageDialog(message) {
+                // 복사가 안 되는 경우 메시지를 직접 보여주기
+                const dialogMessage = `복사 기능을 지원하지 않는 브라우저입니다.\n아래 메시지를 직접 복사해서 사용하세요:\n\n${message}`;
+                
+                if (confirm(dialogMessage + '\n\n확인을 누르면 SMS로 전송할 수 있습니다.')) {
+                    const smsUrl = `sms:?body=${encodeURIComponent(message)}`;
+                    window.open(smsUrl, '_blank');
+                }
+            }
+
+            deleteRecord(name) {
+                this.children = this.children.filter(child => child.name !== name);
+                this.saveData();
+                this.renderRecords();
+            }
+
+            clearAllRecords() {
+                if (this.children.length === 0) {
+                    alert('삭제할 기록이 없습니다.');
+                    return;
+                }
+
+                if (confirm(`총 ${this.children.length}개의 출결 기록을 모두 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
+                    this.children = [];
+                    this.saveData();
+                    this.renderRecords();
+                    alert('모든 출결 기록이 삭제되었습니다.');
+                }
+            }
+
+            renderRecords() {
+                const recordsList = document.getElementById('recordsList');
+                
+                if (this.children.length === 0) {
+                    recordsList.innerHTML = `
+                        <div class="no-records">
+                            <div class="empty-icon">📋</div>
+                            <p>아직 출결 기록이 없습니다</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 기존 내용 지우기
+                recordsList.innerHTML = '';
+                
+                this.children.forEach((child, index) => {
+                    // 레코드 아이템 생성
+                    const recordDiv = document.createElement('div');
+                    recordDiv.className = 'record-item fade-in';
+                    
+                    // 상태에 따른 아이콘 설정
+                    let statusIcon = '';
+                    let statusClass = '';
+                    
+                    if (child.status === '등원') {
+                        statusIcon = '🟢';
+                        statusClass = 'status-arrival';
+                    } else if (child.status === '하원') {
+                        statusIcon = '🔴';
+                        statusClass = 'status-departure';
+                    } else if (child.status === '미등원') {
+                        statusIcon = '🟡';
+                        statusClass = 'status-late';
+                    } else {
+                        statusIcon = '⚫';
+                        statusClass = 'status-absent';
+                    }
+                    
+                    // 헤더 부분
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'record-header';
+                    headerDiv.innerHTML = `
+                        <div class="record-info">
+                            <div class="record-name">
+                                ${child.name}
+                            </div>
+                            <div class="status-badge ${statusClass}">
+                                ${statusIcon} ${child.status}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 삭제 버튼
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.innerHTML = '🗑️ 삭제';
+                    deleteBtn.addEventListener('click', () => {
+                        this.deleteRecord(child.name);
+                    });
+                    headerDiv.appendChild(deleteBtn);
+                    
+                    // 시간 정보 부분
+                    const timesDiv = document.createElement('div');
+                    timesDiv.className = 'record-times';
+                    
+                    if (child.arrivalTime) {
+                        const arrivalDiv = document.createElement('div');
+                        arrivalDiv.className = 'time-entry';
+                        arrivalDiv.innerHTML = `
+                            <span class="status-icon">✓</span>
+                            등원: <span class="time">${child.arrivalTime}</span>
+                        `;
+                        timesDiv.appendChild(arrivalDiv);
+                    }
+                    
+                    if (child.departureTime) {
+                        const departureDiv = document.createElement('div');
+                        departureDiv.className = 'time-entry';
+                        departureDiv.innerHTML = `
+                            <span class="status-icon">✓</span>
+                            하원: <span class="time">${child.departureTime}</span>
+                        `;
+                        timesDiv.appendChild(departureDiv);
+                    }
+                    
+                    if (child.lateTime) {
+                        const lateDiv = document.createElement('div');
+                        lateDiv.className = 'time-entry';
+                        lateDiv.innerHTML = `
+                            <span class="status-icon">!</span>
+                            미등원: <span class="time">${child.lateTime}</span>
+                        `;
+                        timesDiv.appendChild(lateDiv);
+                    }
+                    
+                    if (child.absentTime) {
+                        const absentDiv = document.createElement('div');
+                        absentDiv.className = 'time-entry';
+                        absentDiv.innerHTML = `
+                            <span class="status-icon">-</span>
+                            결석: <span class="time">${child.absentTime}</span>
+                        `;
+                        timesDiv.appendChild(absentDiv);
+                    }
+                    
+                    // 카카오톡 공유 버튼
+                    const kakaoBtn = document.createElement('button');
+                    kakaoBtn.className = 'kakao-btn';
+                    kakaoBtn.innerHTML = `
+                        <img src="https://public.youware.com/users-website-assets/prod/e025f8db-d93d-419b-8998-0a1a8d05c180/95a9161c4438438cb8528d468e7afdef.png" alt="카카오톡" width="20" height="20">
+                        카카오톡 공유
+                    `;
+                    kakaoBtn.addEventListener('click', () => {
+                        this.shareToKakao(child);
+                    });
+                    
+                    // 모든 요소를 레코드에 추가
+                    recordDiv.appendChild(headerDiv);
+                    recordDiv.appendChild(timesDiv);
+                    recordDiv.appendChild(kakaoBtn);
+                    
+                    // 레코드를 목록에 추가
+                    recordsList.appendChild(recordDiv);
+                });
+            }
+
+            saveData() {
+                try {
+                    // localStorage 대신 메모리에만 저장 (Claude artifacts 환경)
+                    // localStorage.setItem('attendanceData', JSON.stringify(this.children));
+                } catch (e) {
+                    console.error('데이터 저장 실패:', e);
+                }
+            }
+
+            loadData() {
+                try {
+                    // localStorage 대신 메모리에서만 로드 (Claude artifacts 환경)
+                    // const savedData = localStorage.getItem('attendanceData');
+                    // if (savedData) {
+                    //     this.children = JSON.parse(savedData);
+                    //     this.renderRecords();
+                    // }
+                } catch (e) {
+                    console.error('데이터 로드 실패:', e);
+                    this.children = [];
+                }
+            }
+        }
+
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            const tracker = new AttendanceTracker();
+        });
+    </script>
+</body>
+</html>
